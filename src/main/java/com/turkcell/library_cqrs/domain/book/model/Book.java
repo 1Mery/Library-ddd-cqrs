@@ -1,5 +1,6 @@
 package com.turkcell.library_cqrs.domain.book.model;
 
+
 import java.util.Objects;
 
 public class Book {
@@ -8,26 +9,54 @@ public class Book {
     private String title;
     private Author author;
     private String isbn;
-    private Integer year;
+    private Integer totalPage;
     private String publisher;
+    private String imageUrl;
 
-    private Book(BookId id, String title, Author author, String isbn, Integer year, String publisher) {
+    private Book(BookId id, String title, Author author, String isbn, Integer totalPage, String publisher,String imageUrl) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
-        this.year = year;
+        this.totalPage = totalPage;
         this.publisher = publisher;
+        this.imageUrl=imageUrl;
     }
 
-    public static Book create(String title,Author author,String isbn, Integer year, String publisher){
+    public static Book create(String title,Author author,String isbn, Integer totalPage, String publisher,String imageUrl){
         validateTitle(title);
         Objects.requireNonNull(author,"Author cannot be null");
         validateIsbn(isbn);
-        validateYear(year);
+        validateTotalPage(totalPage);
         validatePublisher(publisher);
+        validateImageUrl(imageUrl);
 
-        return new Book(BookId.generate(),title,author,isbn,year,publisher);
+        return new Book(BookId.generate(),title,author,isbn,totalPage,publisher,imageUrl);
+    }
+
+    public static Book rehydrate(BookId id, String title, Author author, String isbn, Integer totalPage, String publisher, String imageUrl) {
+        return new Book(id, title, author, isbn, totalPage, publisher, imageUrl);
+    }
+
+    // İş yapan davranışlar
+    public void renameTitle(String newTitle){
+        validateTitle(newTitle);
+        this.title = newTitle;
+    }
+
+    public void changePublisher(String newPublisher){
+        validatePublisher(newPublisher);
+        this.publisher = newPublisher;
+    }
+
+    public void updateImageUrl(String newUrl){
+        validateImageUrl(newUrl);
+        this.imageUrl = newUrl;
+    }
+
+    public void assignAuthor(Author newAuthor){
+        Objects.requireNonNull(newAuthor, "Author cannot be null");
+        this.author = newAuthor;
     }
 
     private static void validateTitle(String title) {
@@ -41,14 +70,19 @@ public class Book {
         }
     }
 
-    private static void validateYear(Integer year){
-        if (year==null||year<=0)
-            throw new IllegalArgumentException("Year cannot be negative or null");
+    private static void validateTotalPage(Integer totalPage){
+        if (totalPage==null||totalPage<=0)
+            throw new IllegalArgumentException("Total page cannot be negative or null");
     }
 
     private static void validatePublisher(String publisher){
         if (publisher.isEmpty())
             throw new IllegalArgumentException("Publisher cannot be null");
+    }
+
+    private static void validateImageUrl(String imageUrl){
+        if (imageUrl == null || imageUrl.isEmpty())
+            throw new IllegalArgumentException("Image url cannot be null or empty");
     }
 
     public BookId getId() {
@@ -67,13 +101,15 @@ public class Book {
         return isbn;
     }
 
-    public Integer getYear() {
-        return year;
+    public Integer getTotalPage() {
+        return totalPage;
     }
 
     public String getPublisher() {
         return publisher;
     }
 
-
+    public String getImageUrl() {
+        return imageUrl;
+    }
 }

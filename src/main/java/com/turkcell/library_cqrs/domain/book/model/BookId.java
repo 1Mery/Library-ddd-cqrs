@@ -1,8 +1,9 @@
 package com.turkcell.library_cqrs.domain.book.model;
 
+import java.util.UUID;
+
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 public record BookId(UUID value) implements Serializable {
     public BookId{
